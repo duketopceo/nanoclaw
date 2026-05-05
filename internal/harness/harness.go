@@ -21,6 +21,7 @@ type AgentExecution struct {
 	DroidName string
 	Input     string
 	Tier      int
+	LLMClient llm.Client // Optional: will use OpenRouter if nil
 }
 
 // ExecutionResult captures the outcome of an agent run.
@@ -57,18 +58,23 @@ func (ae *AgentExecution) Run(ctx context.Context) (*ExecutionResult, error) {
 	}
 
 	// LLM Call
-	apiKey := os.Getenv("OPENROUTER_API_KEY")
-	if apiKey == "" {
-		return nil, fmt.Errorf("OPENROUTER_API_KEY not set")
+	var client llm.Client
+	if ae.LLMClient != nil {
+		client = ae.LLMClient
+	} else {
+		apiKey := os.Getenv("OPENROUTER_API_KEY")
+		if apiKey == "" {
+			return nil, fmt.Errorf("OPENROUTER_API_KEY not set")
+		}
+		client = llm.NewOpenRouterClient(apiKey)
 	}
-	client := llm.NewOpenRouterClient(apiKey)
 	
 	messages := []llm.Message{
 		{Role: "system", Content: assembledContext},
 		{Role: "user", Content: ae.Input},
 	}
 
-	resp, err := client.Chat(ctx, "anthropic/claude-3-5-sonnet-20240620", messages, llmTools)
+	resp, err := client.Chat(ctx, "anthropic/claude-3.5-sonnet", messages, llmTools)
 	if err != nil {
 		return nil, fmt.Errorf("llm chat: %w", err)
 	}

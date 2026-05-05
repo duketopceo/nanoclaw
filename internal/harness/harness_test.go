@@ -3,7 +3,18 @@ package harness
 import (
 	"context"
 	"testing"
+
+	"github.com/duketopceo/nanoclaw/internal/llm"
 )
+
+type MockLLM struct{}
+
+func (m *MockLLM) Chat(ctx context.Context, model string, messages []llm.Message, tools []any) (*llm.Message, error) {
+	return &llm.Message{
+		Role:    "assistant",
+		Content: "Mock response",
+	}, nil
+}
 
 func TestAgentExecution_Run(t *testing.T) {
 	ae := &AgentExecution{
@@ -11,6 +22,7 @@ func TestAgentExecution_Run(t *testing.T) {
 		DroidName: "health",
 		Input:     "check health",
 		Tier:      1,
+		LLMClient: &MockLLM{},
 	}
 
 	ctx := context.Background()

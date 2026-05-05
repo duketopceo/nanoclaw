@@ -10,6 +10,10 @@ import (
 	"time"
 )
 
+type Client interface {
+	Chat(ctx context.Context, model string, messages []Message, tools []any) (*Message, error)
+}
+
 type OpenRouterClient struct {
 	APIKey     string
 	HTTPClient *http.Client
