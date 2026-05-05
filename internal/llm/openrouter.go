@@ -15,14 +15,25 @@ type OpenRouterClient struct {
 	HTTPClient *http.Client
 }
 
+type ToolCall struct {
+	ID       string `json:"id"`
+	Type     string `json:"type"`
+	Function struct {
+		Name      string `json:"name"`
+		Arguments string `json:"arguments"`
+	} `json:"function"`
+}
+
 type Message struct {
-	Role    string `json:"role"`
-	Content string `json:"content"`
+	Role      string     `json:"role"`
+	Content   string     `json:"content"`
+	ToolCalls []ToolCall `json:"tool_calls,omitempty"`
 }
 
 type ChatRequest struct {
 	Model    string    `json:"model"`
 	Messages []Message `json:"messages"`
+	Tools    []any     `json:"tools,omitempty"`
 }
 
 type ChatResponse struct {
@@ -38,27 +49,26 @@ func NewOpenRouterClient(apiKey string) *OpenRouterClient {
 	return &OpenRouterClient{
 		APIKey: apiKey,
 		HTTPClient: &http.Client{
-			Timeout: 30 * time.Second,
+			Timeout: 60 * time.Second,
 		},
 	}
 }
 
-func (c *OpenRouterClient) Chat(ctx context.Context, model, prompt string) (string, error) {
+func (c *OpenRouterClient) Chat(ctx context.Context, model string, messages []Message, tools []any) (*Message, error) {
 	reqBody := ChatRequest{
-		Model: model,
-		Messages: []Message{
-			{Role: "user", Content: prompt},
-		},
+		Model:    model,
+		Messages: messages,
+		Tools:    tools,
 	}
 
 	data, err := json.Marshal(reqBody)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	req, err := http.NewRequestWithContext(ctx, "POST", "https://openrouter.ai/api/v1/chat/completions", bytes.NewBuffer(data))
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -68,31 +78,31 @@ func (c *OpenRouterClient) Chat(ctx context.Context, model, prompt string) (stri
 
 	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("openrouter error (%d): %s", resp.StatusCode, string(body))
+		return nil, fmt.Errorf("openrouter error (%d): %s", resp.StatusCode, string(body))
 	}
 
 	var chatResp ChatResponse
 	if err := json.Unmarshal(body, &chatResp); err != nil {
-		return "", err
+		return nil, err
 	}
 
 	if chatResp.Error != nil {
-		return "", fmt.Errorf("openrouter api error: %s", chatResp.Error.Message)
+		return nil, fmt.Errorf("openrouter api error: %s", chatResp.Error.Message)
 	}
 
 	if len(chatResp.Choices) == 0 {
-		return "", fmt.Errorf("empty response from openrouter")
+		return nil, fmt.Errorf("empty response from openrouter")
 	}
 
-	return chatResp.Choices[0].Message.Content, nil
+	return &chatResp.Choices[0].Message, nil
 }

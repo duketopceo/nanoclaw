@@ -19,7 +19,7 @@ func TestAgentExecution_Run(t *testing.T) {
 		t.Fatalf("expected no error, got %v", err)
 	}
 
-	if res.Status != "scaffolded" {
-		t.Errorf("expected status 'scaffolded', got %s", res.Status)
+	if res.Status != "completed" {
+		t.Errorf("expected status 'completed', got %s", res.Status)
 	}
 }

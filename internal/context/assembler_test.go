@@ -15,8 +15,8 @@ func TestAssemble_Isolation(t *testing.T) {
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
-	if res != "context for tenant: tenant-a" {
-		t.Errorf("expected context for tenant-a, got %s", res)
+	if res != "static context: tenant tenant-a" {
+		t.Errorf("expected static context: tenant tenant-a, got %s", res)
 	}
 
 	// Test missing tenant (Isolation guard)

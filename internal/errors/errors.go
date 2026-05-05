@@ -3,10 +3,11 @@ package errors
 import "fmt"
 
 var (
-	ErrTenantNotFound  = fmt.Errorf("tenant not found")
-	ErrToolNotAllowed  = fmt.Errorf("tool not allowed for this droid")
-	ErrSchemaMismatch = fmt.Errorf("llm output does not match tool schema")
-	ErrTierDenied      = fmt.Errorf("action denied by autonomy tier gate")
+	ErrTenantNotFound          = fmt.Errorf("tenant not found")
+	ErrToolNotAllowed          = fmt.Errorf("tool not allowed for this droid")
+	ErrSchemaMismatch          = fmt.Errorf("llm output does not match tool schema")
+	ErrTierDenied              = fmt.Errorf("action denied by autonomy tier gate")
+	ErrActionRequiresApproval  = fmt.Errorf("action requires manual approval")
 )
 
 type SchemaMismatchError struct {

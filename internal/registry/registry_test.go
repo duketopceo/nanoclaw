@@ -8,11 +8,11 @@ import (
 
 func TestRegistry_For(t *testing.T) {
 	// Test happy path
-	tools, err := For("health")
+	reg, err := For("health")
 	if err != nil {
 		t.Fatalf("expected no error for health droid, got %v", err)
 	}
-	if len(tools) == 0 {
+	if len(reg.Tools) == 0 {
 		t.Error("expected tools for health droid, got 0")
 	}
 
