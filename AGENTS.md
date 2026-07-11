@@ -2,6 +2,8 @@
 
 Inherits from [luke-agents/AGENTS.md](https://github.com/duketopceo/luke-agents/blob/main/AGENTS.md). This file specializes; it does not replace.
 
+**Shared agent brain:** AppFlowy `http://cluster1:8088` (MCP `appflowy`) — primary Session Log / Decisions / Projects / Rules. Compose on c1 only; never Swarm-deploy. See luke-agents `AGENTS.md` §0a.
+
 ## Design Philosophy
 
 NanoClaw is the execution engine for Pace HQ agents. It follows the **Triple-Lock** architecture to ensure multi-tenant safety and reasoning integrity.
