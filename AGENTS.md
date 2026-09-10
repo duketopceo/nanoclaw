@@ -2,7 +2,7 @@
 
 Inherits from [luke-agents/AGENTS.md](https://github.com/duketopceo/luke-agents/blob/main/AGENTS.md). This file specializes; it does not replace.
 
-**Shared agent brain:** AppFlowy `http://cluster1:8088` (MCP `appflowy`) — primary Session Log / Decisions / Projects / Rules. Compose on c1 only; never Swarm-deploy. See luke-agents `AGENTS.md` §0a.
+**Shared agent brain:** Kurultai knowledge brain (`knowledge.shippedit.dev`, instance **Ulaanbaatar**) — canonical session log / decisions / projects / rules. See luke-agents `AGENTS.md` §0a.
 
 ## Design Philosophy
 
